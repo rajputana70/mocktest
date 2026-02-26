@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Professional Mock Test & Interview System</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+    margin:0; color:#f1f5f9;
+  }
+  .container {
+    max-width:1100px; margin:40px auto; padding:30px;
+    background:rgba(15,23,42,0.95);
+    border-radius:18px; box-shadow:0 15px 40px rgba(0,0,0,.6);
+  }
+  h1 { text-align:center; font-weight:600; color:#38bdf8; }
+  h2 { color:#60a5fa; margin-top:25px; }
+  label { margin-top:15px; display:block; font-weight:500; }
+  input, select {
+    width:100%; padding:12px; margin-top:6px;
+    border-radius:10px; border:1px solid #334155;
+    background:#1e293b; color:#f8fafc;
+  }
+  button {
+    margin-top:20px; width:100%; padding:14px;
+    border:none; border-radius:12px;
+    background:linear-gradient(90deg,#2563eb,#06b6d4);
+    color:white; font-size:16px; cursor:pointer;
+    font-weight:600; letter-spacing:.5px;
+  }
+  button:hover { opacity:.9; }
+  .card {
+    margin-top:25px; padding:20px;
+    background:#0f172a; border-radius:14px;
+    border:1px solid #334155;
+  }
+  ul { columns:2; padding-left:20px; }
+  li { margin-bottom:6px; }
+  table { width:100%; border-collapse:collapse; margin-top:10px; }
+  th,td { padding:10px; border-bottom:1px solid #334155; }
+  th { color:#38bdf8; text-align:left; }
+  .pass { color:#22c55e; font-weight:600; }
+  .fail { color:#ef4444; font-weight:600; }
+</style>
+</head>
+<body>
+<div class="container">
+<h1>Institute Mock Test & Placement Evaluation System</h1>
+
+<label>Student Name</label>
+<input id="name">
+
+<label>Course</label>
+<select id="course" onchange="showQuestions()">
+<option value="">-- Select Course --</option>
+<option value="CCNA">CCNA</option>
+<option value="AWS">AWS</option>
+<option value="AZ-104">AZ-104</option>
+</select>
+
+<label>Include HR Round</label>
+<select id="hr">
+<option value="Yes">Yes</option>
+<option value="No">No</option>
+</select>
+
+<label>Total Questions</label>
+<input id="total" type="number">
+
+<label>Correct Answers</label>
+<input id="correct" type="number">
+
+<label>Time Taken (minutes)</label>
+<input id="time" type="number">
+
+<label>Pass Cutoff (%)</label>
+<input id="cutoff" type="number" value="70">
+
+<button onclick="calculateKPI()">Generate Final Evaluation Report</button>
+
+<div id="questions" class="card" style="display:none"></div>
+<div id="hrround" class="card" style="display:none"></div>
+<div id="output" class="card" style="display:none"></div>
+</div>
+
+<script>
+
+const bank={
+  "CCNA":[
+    // 50+ CCNA Technical Questions
+    "What is VLAN?","Difference between TCP and UDP?","Explain OSPF routing","What is NAT?","Explain subnetting","Scenario: Office network is slow, troubleshoot steps","Scenario: VLAN 10 cannot access VLAN 20","Explain STP and loop prevention","How does DHCP work?","Scenario: Internet works but server unreachable","Explain ARP","Difference between static and dynamic routing","Scenario: Routing table misconfigured","Explain ping and traceroute","Scenario: Switch not forwarding traffic","Explain ACLs","What is a default gateway?","Scenario: IP conflict issue","Explain port security","Scenario: Switchport in error-disabled state","Explain HSRP","Difference between Layer2 and Layer3 switch","Scenario: Multiple routers in network","Explain RIP vs OSPF","Scenario: Inter-VLAN routing setup","What is broadcast domain?","Scenario: User cannot access printer","Explain VLAN tagging","Scenario: Frame drops in network","What is MTU?","Scenario: Packet loss troubleshooting","Explain spanning-tree types","Scenario: Loop detected in network","Difference between hub, switch, router","Scenario: Router interface down","Explain NAT types","Scenario: DNS resolution failure","Explain IPv6 addressing","Scenario: VPN connectivity issue","Explain QoS basics","Scenario: High latency on WAN","Explain switch stacking","Scenario: Firewall blocking traffic","Explain network redundancy","Scenario: DHCP scope exhausted","Explain port aggregation","Scenario: Switch CPU high usage","Explain multicast routing","Scenario: Security policy violation","Explain wireless SSID setup","Scenario: Wireless clients cannot connect","Explain subnet mask calculations","Scenario: Ping works locally but not remote","Explain network topology diagrams","Scenario: Interface flapping"
+  ],
+  "AWS":[
+    // 50+ AWS Technical & Scenario Questions
+    "What is EC2?","Difference between S3 Standard and Glacier?","What is IAM Role?","Explain VPC","What is Auto Scaling?","Scenario: Website down but EC2 running","Scenario: High AWS bill generated","Explain public vs private subnet","Scenario: Security group misconfigured","Explain CloudWatch metrics","Scenario: EC2 instance cannot connect to RDS","Explain Route53 setup","Scenario: Multi-AZ deployment needed","Explain Elastic Load Balancer","Scenario: Load balancer unhealthy instances","Explain EBS vs Instance Store","Scenario: Backup failure","Explain S3 bucket policy","Scenario: Permissions denied","Explain AWS Lambda use case","Scenario: Lambda timeout issues","Explain CloudTrail","Scenario: Unauthorized access alert","Explain VPC peering","Scenario: Cross-region replication","Explain SNS & SQS","Scenario: Message lost in queue","Explain AWS Config","Scenario: Resource drift detected","Explain Elastic Beanstalk","Scenario: Deployment failed","Explain RDS types","Scenario: Database connection throttled","Explain DynamoDB basics","Scenario: Read/write capacity issues","Explain CloudFront","Scenario: CDN not serving content","Explain API Gateway","Scenario: 403 forbidden error","Explain KMS & encryption","Scenario: Secrets Manager retrieval failure","Explain Step Functions","Scenario: Lambda not triggered","Explain SSM parameter store","Scenario: Incorrect parameter value","Explain AWS Organizations","Scenario: SCP blocking account action","Explain CloudFormation basics","Scenario: Stack creation error","Explain ECS vs EKS","Scenario: Container failing to start"
+  ],
+  "AZ-104":[
+    // 50+ Azure Technical & Scenario Questions
+    "What is Resource Group?","Difference between RBAC and Azure Policy","What is Azure VM Scale Set?","Explain Azure Storage types","What is Azure AD?","Scenario: VM not connecting via RDP","Scenario: Storage account access denied","Explain Azure Virtual Network components","Scenario: High availability for VM workload","Explain Backup and Site Recovery","Scenario: NSG misconfigured","Explain Azure Monitor","Scenario: Alert rules not firing","Explain Azure Firewall","Scenario: Firewall blocking port","Explain Azure Load Balancer","Scenario: Load balancer unhealthy instances","Explain Azure Bastion","Scenario: User cannot access VM","Explain Azure Traffic Manager","Scenario: Traffic routing issue","Explain Azure AD Conditional Access","Scenario: MFA issues","Explain Azure Policy assignments","Scenario: Policy not applied","Explain Key Vault","Scenario: Secrets retrieval failed","Explain Azure Automation Runbooks","Scenario: Automation job failed","Explain Azure App Service","Scenario: App deployment failed","Explain Azure SQL Database","Scenario: SQL query slow","Explain Azure Functions","Scenario: Function execution error","Explain Azure VPN Gateway","Scenario: VPN connectivity problem","Explain Azure Site Recovery","Scenario: DR failover test","Explain RBAC roles","Scenario: User permission error","Explain Azure Storage replication","Scenario: Blob not accessible","Explain Azure AD Connect","Scenario: Sync failure","Explain Azure Kubernetes Service","Scenario: AKS node not ready","Explain Network Watcher","Scenario: Packet capture troubleshooting","Explain Azure ExpressRoute","Scenario: Private peering issue","Explain Azure Sentinel basics","Scenario: Alert not triggered","Explain Azure Policy vs Blueprint","Scenario: Compliance violation","Explain Azure Logic Apps","Scenario: Workflow not running"
+  ]
+};
+
+const hrQuestions=[
+"Tell me about yourself.","Why should we hire you?","Explain a challenging technical issue you solved.","Describe teamwork experience.","How do you handle deadlines?","Where do you see yourself in 5 years?","Explain a failure and lesson learned.","How do you manage stress?","What motivates you?","Are you open to relocation?"
+];
+
+function showQuestions(){
+  const course=document.getElementById('course').value;
+  if(!course){document.getElementById('questions').style.display='none';return;}
+
+  let html='<h2>100+ Technical & Scenario Questions</h2><ul>';
+  bank[course].forEach(q=>html+='<li>'+q+'</li>');
+  html+='</ul>';
+  document.getElementById('questions').innerHTML=html;
+  document.getElementById('questions').style.display='block';
+}
+
+function calculateKPI(){
+  const total=Number(document.getElementById('total').value);
+  const correct=Number(document.getElementById('correct').value);
+  const time=Number(document.getElementById('time').value);
+  const cutoff=Number(document.getElementById('cutoff').value);
+  const wrong=total-correct;
+  const score=(correct/total)*100;
+  const avgTime=(time/total).toFixed(2);
+  const status=score>=cutoff?'PASS':'FAIL';
+
+  document.getElementById('output').style.display='block';
+  document.getElementById('output').innerHTML=`
+  <h2>Final KPI Evaluation</h2>
+  <table>
+  <tr><th>Total Questions</th><td>${total}</td></tr>
+  <tr><th>Correct</th><td>${correct}</td></tr>
+  <tr><th>Wrong</th><td>${wrong}</td></tr>
+  <tr><th>Score</th><td>${score.toFixed(2)}%</td></tr>
+  <tr><th>Average Time per Question</th><td>${avgTime} min</td></tr>
+  <tr><th>Status</th><td class="${status==='PASS'?'pass':'fail'}">${status}</td></tr>
+  </table>`;
+
+  if(document.getElementById('hr').value==='Yes'){
+    let hr='<h2>HR Interview Questions</h2><ul>';
+    hrQuestions.forEach(q=>hr+='<li>'+q+'</li>');
+    hr+='</ul>';
+    document.getElementById('hrround').innerHTML=hr;
+    document.getElementById('hrround').style.display='block';
+  }
+}
+
+</script>
+</body>
+</html>
